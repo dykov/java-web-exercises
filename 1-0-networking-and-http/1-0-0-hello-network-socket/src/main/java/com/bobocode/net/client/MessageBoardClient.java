@@ -3,7 +3,7 @@ package com.bobocode.net.client;
 import com.bobocode.net.server.MessageBoardServer;
 import lombok.SneakyThrows;
 
-import java.io.BufferedReader;
+import java.io.*;
 import java.net.Socket;
 
 import static com.bobocode.net.client.ClientUtil.*;
@@ -26,15 +26,32 @@ public class MessageBoardClient {
 
     @SneakyThrows
     public static void main(String[] args) {
-        try (BufferedReader reader = openConsoleReader()) {
-            String message = readMessage(reader);
+        try(
+                final InputStreamReader consoleInputStreamReader = new InputStreamReader(System.in);
+                final BufferedReader bufferedReader = new BufferedReader(consoleInputStreamReader)
+        ) {
+            String message = readMessage(bufferedReader);
 
-            while (!message.equals("q")) {
-                try (Socket socket = openSocket(SERVER_ADDRESS, SERVER_PORT)) {
-                    writeToSocket(message, socket);
+            while(!message.equals("q")) {
+                try(
+                        final Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+                        final OutputStream outputStream = socket.getOutputStream();
+                        final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+                        final BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)
+                ) {
+                    bufferedWriter.write(message);
+                    bufferedWriter.flush();
                 }
-                message = readMessage(reader);
+
+                message = readMessage(bufferedReader);
             }
+        } catch(Exception e) {
+            throw new RuntimeException("Cannot send message", e);
         }
+    }
+
+    public static String readMessage(BufferedReader reader) throws IOException {
+        System.out.print("Enter message (q to quit): ");
+        return reader.readLine();
     }
 }
