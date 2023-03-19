@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 /**
  * Util class for a {@link MessageBoardServer}. It provides all necessary method for network communication. Using these
@@ -41,7 +42,7 @@ public class ServerUtil {
      */
     @SneakyThrows
     public static ServerSocket createServerSocket(int port) {
-        throw new ExerciseNotCompletedException(); // todo: implement according to javadoc and verify by ServerUtilTest
+        return new ServerSocket(port);
     }
 
     /**
@@ -52,7 +53,7 @@ public class ServerUtil {
      */
     @SneakyThrows
     public static Socket acceptClientSocket(ServerSocket serverSocket) {
-        throw new ExerciseNotCompletedException(); // todo: implement according to javadoc and verify by ServerUtilTest
+        return serverSocket.accept();
     }
 
     /**
@@ -66,7 +67,9 @@ public class ServerUtil {
      */
     @SneakyThrows
     public static String readMessageFromSocket(Socket socket) {
-        throw new ExerciseNotCompletedException(); // todo: implement according to javadoc and verify by ServerUtilTest
+        try(BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            return bufferedReader.lines().collect(Collectors.joining());
+        }
     }
 
     /**
