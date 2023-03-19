@@ -38,5 +38,8 @@ public class WelcomeServlet extends HttpServlet {
                     "current date as a response on <code>/date</code> path.<br> Use <code>LocalDate.now()</code> " +
                     "to get current date." + "</h2>");
         out.println("</body></html>");
+
+        final String clientAddress = request.getRemoteAddr();
+        System.out.println("clientAddress = " + clientAddress);
     }
 }
